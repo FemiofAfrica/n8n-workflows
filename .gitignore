@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+dist/
+build/
+.env
+.env.*
+
+# n8n-as-code local sync state (not useful for a public repo)
+.n8n-state.json
+
