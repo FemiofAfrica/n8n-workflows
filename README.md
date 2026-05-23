@@ -108,3 +108,4 @@ Notes:
 ## Additional Workflows
 
 - `rag/RAG — Chat.workflow.json`: a sanitized n8n export for a lightweight RAG chat workflow. See `rag/README.md` for import steps and credential re-wiring.
+- `rag/RAG — Document Ingestion.workflow.json`: companion ingestion workflow that pulls files from Google Drive and ingests them into the vector store used by `RAG — Chat`.
