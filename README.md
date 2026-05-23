@@ -105,3 +105,6 @@ Notes:
 - This repo intentionally uses placeholders instead of real credential IDs and document IDs.
 - Consider rate limiting / auth on webhook endpoints if exposing them publicly.
 
+## Additional Workflows
+
+- `rag/RAG — Chat.workflow.json`: a sanitized n8n export for a lightweight RAG chat workflow. See `rag/README.md` for import steps and credential re-wiring.

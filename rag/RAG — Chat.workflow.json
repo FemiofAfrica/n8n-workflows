@@ -1,0 +1,148 @@
+{
+  "name": "RAG — Chat",
+  "nodes": [
+    {
+      "id": "1e189b5e-5929-4117-8c95-15321b47efec",
+      "webhookId": "e983bb7d-e16c-4033-a579-ea2447aad116",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi! Ask me anything about the documents in your knowledge base.",
+        "availableInChat": true,
+        "agentName": "Lily",
+        "agentDescription": "Lily answers about Femi's career.",
+        "options": {}
+      }
+    },
+    {
+      "id": "8b00b982-0a71-491e-84d4-a408c0f74bde",
+      "name": "RAG Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are an expert contract assistant with access to a knowledge base of contracts and legal documents.\n\nYou have two core capabilities:\n1. ANSWER QUESTIONS — retrieve and explain terms, clauses, or conditions from existing contracts in the knowledge base.\n2. DRAFT NEW CONTRACTS — when the user asks you to prepare, draft, or create a contract, use the knowledge_base tool to retrieve relevant templates and clause language, then generate a complete, well-structured contract document using those retrieved terms combined with the specific details the user provides.\n\nWhen drafting a contract:\n- Always search the knowledge base first for relevant templates or similar contracts\n- Use the retrieved clause language and structure as your foundation\n- Incorporate the user's specified parties, dates, terms, and conditions\n- Output the full contract text in a clean, professional format with clear sections and numbering\n- If a required clause is not in the knowledge base, draft it using standard legal conventions\n\nNever refuse to draft a contract just because the exact template is not in the knowledge base — use what is available and fill gaps with standard practice."
+        }
+      }
+    },
+    {
+      "id": "2cfd1de9-d2f7-428b-8922-c5025f26a820",
+      "name": "Groq LLM",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {
+          "temperature": 0.1
+        }
+      }
+    },
+    {
+      "id": "c3686879-224f-4cce-90bb-ae20c113c8b4",
+      "name": "Knowledge Base",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        448
+      ],
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the knowledge base for relevant documents to answer the user question. Input should be the user's question or key terms to search for.",
+        "topK": 5,
+        "options": {}
+      }
+    },
+    {
+      "id": "a19f6439-e2ad-490a-ba7a-49c78697ecac",
+      "name": "Embeddings Ollama",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        224,
+        672
+      ],
+      "parameters": {
+        "model": "nomic-embed-text"
+      }
+    }
+  ],
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq LLM": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge Base": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Knowledge Base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "template": true,
+    "redactedCredentials": [
+      "groqApi",
+      "ollamaApi",
+      "postgres"
+    ]
+  },
+  "active": false
+}
